@@ -1,7 +1,4 @@
 import 'dart:ui';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,7 +9,6 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:loader_overlay/loader_overlay.dart';
 
 import 'constants/app_constants.dart';
-import 'helper/push_notification_helper.dart';
 import 'translations/main_translations.dart';
 import 'view/master_screen.dart';
 import 'view/splash_screen.dart';
@@ -23,21 +19,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initStorages();
-  await Firebase.initializeApp();
-
-  final box = GetStorage();
-
-  FlutterError.onError = (errorDetails) {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  };
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-
-  await PushNotificationHelper().init((p0) {
-    print('came from init');
-  });
 
   runApp(const MyApp());
 }
@@ -81,8 +62,7 @@ class MyApp extends StatelessWidget {
         ),
         visualDensity: FlexColorScheme.comfortablePlatformDensity,
         useMaterial3: true,
-        // To use the playground font, add GoogleFonts package and uncomment
-        fontFamily: GoogleFonts.ptSans().fontFamily,
+        fontFamily: GoogleFonts.nunito().fontFamily,
       ),
       darkTheme: FlexThemeData.dark(
         colorScheme: AppConstants.flexSchemeDark,
@@ -109,15 +89,13 @@ class MyApp extends StatelessWidget {
         ),
         visualDensity: FlexColorScheme.comfortablePlatformDensity,
         useMaterial3: true,
-        // To use the playground font, add GoogleFonts package and uncomment
-        fontFamily: GoogleFonts.ptSans().fontFamily,
+        fontFamily: GoogleFonts.nunito().fontFamily,
       ),
       themeMode: tm != null ? ThemeMode.values.firstWhere((e) => e.toString() == tm,
           orElse: () => ThemeMode.light) : ThemeMode.light,
-      initialRoute: SplashScreen.routePath,
+      initialRoute: ContactsScreen.routePath,
       getPages: [
-        GetPage(name: SplashScreen.routePath, page: () => const SplashScreen()),
-        GetPage(name: MasterScreen.routePath, page: () => const MasterScreen()),
+        GetPage(name: ContactsScreen.routePath, page: () => ContactsScreen()),
       ],
       supportedLocales: AppConstants.supportedLocales.values,
       locale: Locale(box.read('lang') ?? (Get.deviceLocale?.languageCode ?? 'en')),

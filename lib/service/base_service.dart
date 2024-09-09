@@ -1,24 +1,20 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get_connect/connect.dart';
 import 'package:get/get_connect/http/src/request/request.dart';
 import 'package:get/route_manager.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'package:mobile/constants/app_constants.dart';
-import 'package:mobile/model/response/response_model.dart';
 import 'package:mobile/view/pages/login/welcome_screen.dart';
-
-import '../util/get_snackbar_utils.dart';
 
 class BaseService extends GetConnect {
   final box = GetStorage();
+  final String apiKey = '05ee0af0-d3d9-4197-ae7e-97b88dbac34b';
   @override
   void onInit() {
     httpClient.baseUrl = AppConstants.getWebserviceUrl();
     httpClient.defaultContentType = "application/json; charset=UTF-8";
-    httpClient.timeout = const Duration(seconds: 120);
+    httpClient.timeout = const Duration(seconds: 60);
 
     httpClient.addRequestModifier((Request request) {
       final token = box.read("accessToken");
@@ -29,6 +25,7 @@ class BaseService extends GetConnect {
       if (publicToken != null && publicToken.toString().isNotEmpty) {
         request.headers['C-Authorization'] = "Bearer $publicToken";
       }
+      request.headers['ApiKey'] = apiKey;
       request.headers['X-Source'] = "Mobile App";
       return request;
     });
@@ -38,15 +35,6 @@ class BaseService extends GetConnect {
   Future<bool> isOnline() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     return connectivityResult != ConnectivityResult.none;
-  }
-
-  void handleResponseModel(ResponseModel<dynamic> responseModel) {
-    if (responseModel.isSuccess) {
-      GetSnackbarUtils.success("Başarılı", responseModel.message ?? "İşlem başarı ile tamamlandı");
-    }
-    else{
-      GetSnackbarUtils.error("Hata", responseModel.message ?? "Bir hata oluştu");
-    }
   }
 
   @override
@@ -201,11 +189,6 @@ class BaseService extends GetConnect {
           Get.offAll(() => const WelcomeScreen());
           break;
         default:
-          FirebaseCrashlytics.instance.recordError(
-              e,
-              stackTrace,
-              reason: 'Unrecognized http status code'
-          );
           throw 'Bir hata oluştu';
       }
     }

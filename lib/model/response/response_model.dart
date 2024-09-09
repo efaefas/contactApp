@@ -1,37 +1,47 @@
 class ResponseModel<T> {
-  bool? result;
-  String? message;
-  T? item;
+  bool? success;
+  List<String>? messages;
+  T? data;
+  int? status;
 
-  ResponseModel({this.result, this.message, this.item});
+  ResponseModel({this.success, this.messages, this.data, this.status});
 
   ResponseModel.fromJson(Map<String, dynamic> json, Function fromJsonModel) {
-    result = json['result'];
-    message = json['message'];
-    if (json['item'] != null) {
-      if(json['item'] is bool){
-        item = json['item'];
-      } else if(json['item'] is List){
-        item = fromJsonModel(json['item']);
-      }else {
-        final itemJson = json['item'].cast<String, dynamic>();
-        item = fromJsonModel(itemJson);
-      }
+    success = json['success'];
 
+    messages = json['messages'] != null
+        ? (json['messages'] as List).cast<String>()
+        : [];
+
+    if (json['data'] != null) {
+      if (json['data'] is String) {
+        data = fromJsonModel(json['data']);
+      } else if (json['data'] is Map) {
+        final dataJson = json['data'] as Map<String, dynamic>;
+        if (dataJson.containsKey('users') && dataJson['users'] is List) {
+          data = fromJsonModel(dataJson['users']);
+        } else if (dataJson.containsKey('imageUrl')) {
+          data = dataJson['imageUrl'] as T;
+        }
+      }
     }
+
+    status = json['status'];
   }
 
+
   bool get isSuccess {
-    return result == true;
+    return success == true;
   }
 
   Map<String, dynamic> toJson(Function toJsonModel) {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['result'] = result;
-    data['message'] = message;
-    if (item != null) {
-      data['item'] = toJsonModel(item);
+    final Map<String, dynamic> item = <String, dynamic>{};
+    item['success'] = success;
+    item['messages'] = messages;
+    if (data != null) {
+      item['data'] = toJsonModel(data);
     }
-    return data;
+    item['status'] = this.status;
+    return item;
   }
 }

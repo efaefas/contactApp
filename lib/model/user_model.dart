@@ -1,59 +1,49 @@
-import 'package:get_storage/get_storage.dart';
-import 'package:mobile/model/local_flag.dart';
 
+class UserModel {
+  String? id;
+  String? createdAt;
+  String? firstName;
+  String? lastName;
+  String? phoneNumber;
+  String? profileImageUrl;
 
-class UserModel extends LocalFlag {
-  int? id;
-  String? name;
-  String? email;
-  String? phone;
-  String? address;
   UserModel(
       {this.id,
-        this.name,
-        this.email,
-        this.phone,
-        this.address,}) : super.created();
+        this.createdAt,
+        this.firstName,
+        this.lastName,
+        this.phoneNumber,
+        this.profileImageUrl});
 
-  UserModel.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
+  UserModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    phone = json['phone'];
-    address = json['address'];
+    createdAt = json['createdAt'];
+    firstName = json['firstName'];
+    lastName = json['lastName'];
+    phoneNumber = json['phoneNumber'];
+    profileImageUrl = json['profileImageUrl'];
   }
 
-  @override
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = super.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['name'] = name;
-    data['email'] = email;
-    data['phone'] = phone;
-    data['address'] = address;
+    data['createdAt'] = createdAt;
+    data['firstName'] = firstName;
+    data['lastName'] = lastName;
+    data['phoneNumber'] = phoneNumber;
+    data['profileImageUrl'] = profileImageUrl;
     return data;
   }
 
-  String get initials => name?.isNotEmpty == true ? name!.trim().split(' ').map((l) => l[0]).take(2).join() : '';
+  String get initials => firstName?.isNotEmpty == true ? firstName!.trim().split(' ').map((l) => l[0]).take(2).join() : '';
 
-  static Future<void> setLocal(UserModel o) async {
-    final box = GetStorage();
-    return box.write("userData", o.toJson());
-  }
+  static UserModel fromJsonModel(Map<String, dynamic> json) => UserModel.fromJson(json);
 
-  static UserModel? getLocal() {
-    final box = GetStorage();
-    var a = box.read("userData");
-    if (a != null) {
-      if (a is UserModel) {
-        return a;
-      }
-      return UserModel.fromJson(a);
+  static List<UserModel> fromJsonListModel(List<dynamic> json) {
+    var list = <UserModel>[];
+    for (var v in json) {
+      list.add(UserModel.fromJson(v));
     }
-    return null;
+    return list;
   }
-
-  // Magic goes here. you can use this function to from json method.
-  static UserModel fromJsonModel(Map<String, dynamic> json) =>
-      UserModel.fromJson(json);
 }

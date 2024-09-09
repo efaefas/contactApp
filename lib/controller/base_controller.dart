@@ -8,7 +8,6 @@ import 'package:get_storage/get_storage.dart';
 import '../model/user_model.dart';
 
 abstract class BaseController extends GetxController with WidgetsBindingObserver {
-  final user = UserModel.getLocal().obs;
 
   late StreamSubscription<ConnectivityResult> subscription;
   late bool isOnline = false;
@@ -25,9 +24,6 @@ abstract class BaseController extends GetxController with WidgetsBindingObserver
     subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       isOnline = result != ConnectivityResult.none;
       if(isOnline) connected();
-    });
-    storage.listenKey('userData', (value) {
-      user(UserModel.getLocal());
     });
     super.onInit();
   }

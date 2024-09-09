@@ -14,26 +14,12 @@ class AppConstants {
 
   static const supportedLocales = {'Türkçe': Locale('tr'), 'English': Locale('en')};
 
-  static const bool useLocal = false;
-  static const String baseUrlDev = useLocal ? "http://192.168.1.102:44331/" : "https://veridevi.kodfu.com/";
-  static const String baseUrlLive = "https://veridevi.kodfu.com/";
+  static const bool useLocal = true;
+  static const String baseUrlDev = useLocal ? "http://146.59.52.68:11235/" : "";
+
 
   static String getWebserviceUrl() {
-    if(kDebugMode){
       return '${baseUrlDev}api/';
-    }
-    else {
-      return '${baseUrlLive}api/';
-    }
-  }
-
-  static String getHubUrl() {
-    if(kDebugMode){
-      return '${baseUrlDev}hubs/';
-    }
-    else {
-      return '${baseUrlLive}hubs/';
-    }
   }
 
   static ColorScheme flexSchemeLight = ColorScheme.fromSeed(
@@ -57,4 +43,6 @@ class AppConstants {
     error: const Color(0xffb82d40),
     background: const Color(0xffd4e1df),
   );
+
+  static Color pageColor = const Color(0xfff4f4f4);
 }
